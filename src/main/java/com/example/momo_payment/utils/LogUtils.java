@@ -1,7 +1,6 @@
 package com.example.momo_payment.utils;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.Logger;
 
 public class LogUtils {

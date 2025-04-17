@@ -1,9 +1,4 @@
 package com.example.momo_payment.services;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,24 +36,16 @@ public class MomoService {
     @Value("${momo.request-type}")
     private String requestType;
 
-    // Logic thanh toán có thể dùng ở đây
-    
-
     public MomoResponse createPayment() {
-        // Các tham số cần thiết
         String requestId = String.valueOf(System.currentTimeMillis());
         String orderId = String.valueOf(System.currentTimeMillis());
         String orderInfo = "Test Order: " + orderId;
         long amount = 50000;
         String extraData = "extraData";
-        
-        // Thứ tự sắp xếp các tham số theo yêu cầu của MoMo
         String rawSignature = String.format(
-            "accessKey=%s&amount=%s&extraData=%s&ipnUrl=%s&orderId=%s&orderInfo=%s&partnerCode=%s&redirectUrl=%s&requestId=%s&requestType=%s",
-            accessKey, amount, extraData, ipnUrl, orderId, orderInfo, partnerCode, redirectUrl, requestId, requestType
+                "accessKey=%s&amount=%s&extraData=%s&ipnUrl=%s&orderId=%s&orderInfo=%s&partnerCode=%s&redirectUrl=%s&requestId=%s&requestType=%s",
+                accessKey, amount, extraData, ipnUrl, orderId, orderInfo, partnerCode, redirectUrl, requestId, requestType
         );
-        
-        // Tạo chữ ký HMAC SHA256
         String signature = "";
         try {
             signature = Encoder.signHmacSHA256(rawSignature, secretKey);
@@ -66,8 +53,6 @@ public class MomoService {
         } catch (Exception e) {
             log.error("Error signing HMAC SHA256: {}", e.getMessage());
         }
-        
-        // Tạo đối tượng yêu cầu với chữ ký đã tính toán
         MomoRequest request = MomoRequest.builder()
                 .partnerCode(partnerCode)
                 .requestType(requestType)
@@ -81,9 +66,7 @@ public class MomoService {
                 .signature(signature)
                 .lang("vi")
                 .build();
-        
-        // Gửi yêu cầu thanh toán MoMo
-        return momoApi.createPayment(request);
-    }  
-}
 
+        return momoApi.createPayment(request);
+    }
+}
